@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/DavidsMetaverse/static/css/main.84da4b71.css",
+    "main.js": "/DavidsMetaverse/static/js/main.11e8d459.js",
+    "index.html": "/DavidsMetaverse/index.html",
+    "main.84da4b71.css.map": "/DavidsMetaverse/static/css/main.84da4b71.css.map",
+    "main.11e8d459.js.map": "/DavidsMetaverse/static/js/main.11e8d459.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.84da4b71.css",
+    "static/js/main.11e8d459.js"
+  ]
+}
