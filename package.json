@@ -1,7 +1,7 @@
 {
   "name": "view-skissor",
   "version": "1.0.0",
-  "homepage": "https://thepianist9.github.io/DavidsMetaverse",
+  "homepage": ".",
   "description": "Shows how to form self-contained components with their own state and user interaction.",
   "keywords": [],
   "main": "src/index.js",

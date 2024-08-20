@@ -20,7 +20,7 @@ import Fab from '@mui/material/Fab';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Fade from '@mui/material/Fade';
 
-const pages = ['Home', 'Skills', 'Experiences', 'Projects', 'Contact me'];
+const pages = ['Home', 'Skills', 'Experiences', 'Projects', 'Contact '];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 
@@ -61,12 +61,12 @@ HideOnScroll.propTypes = {
   window: PropTypes.func,
 };
 
-export function ResponsiveAppBar(lenis, props) {
-
+export function ResponsiveAppBar(props) {
+  const { lenis, visible } = props;
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-  const handleOpenNavMenu = (event) => {
+  const handleClickNavbar = (event) => {
     setAnchorElNav(event.currentTarget);
   };
   const handleOpenUserMenu = (event) => {
@@ -80,25 +80,30 @@ export function ResponsiveAppBar(lenis, props) {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const handleNavClick = (event, targetId) => {
+    event.preventDefault();
+    console.log(targetId)
+    const anchor = document.querySelector(`#${targetId}`);
+
+    if (anchor) {
+      console.log(`Scrolling to ${targetId}`);
+      lenis.scrollTo(anchor);
+      anchor.scrollIntoView({
+        block: 'center',
+      });
+    }
+    handleCloseNavMenu();
+  };
+
   return (
     <React.Fragment>
       <CssBaseline />
-      <HideOnScroll {...props}>
         <AppBar sx={{backgroundColor:'transparent',  boxShadow: 'none'}}>
           <Toolbar>
 
-          <Toolbar />
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
+
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }, justifyContent: 'center' }}>
             <Menu
               id="menu-appbar"
               anchorEl={anchorElNav}
@@ -118,37 +123,18 @@ export function ResponsiveAppBar(lenis, props) {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                <MenuItem key={page} onClick={(event) => handleNavClick(event, page.replace(/\s+/g, ''))}>
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            LOGO
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex' }, justifyContent: 'center' }}>
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'black', display: 'block' }}
+                onClick={(event) => handleNavClick(event, page.replace(/\s+/g, ''))}
+                sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 {page}
               </Button>
@@ -157,7 +143,7 @@ export function ResponsiveAppBar(lenis, props) {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/profile/profile_pic.jpg" />
+                <Avatar alt="Remy Sharp" src={`${process.env.PUBLIC_URL}/profile/profile_pic.jpg`} />
               </IconButton>
             </Tooltip>
             <Menu
@@ -186,7 +172,6 @@ export function ResponsiveAppBar(lenis, props) {
 
         </Toolbar>
         </AppBar>
-      </HideOnScroll>
       <ScrollTop lenis={lenis} {...props}>
         <Fab size="small" aria-label="scroll back to top">
           <KeyboardArrowUpIcon />
@@ -196,7 +181,7 @@ export function ResponsiveAppBar(lenis, props) {
   );
 }
 function ScrollTop(props) {
-  const lenis = props.lenis.lenis
+  const lenis = props.lenis
   const { children, window } = props;
   // Note that you normally won't need to set the window ref as useScrollTrigger
   // will default to window.
@@ -209,7 +194,7 @@ function ScrollTop(props) {
 
   const handleClick = (event) => {
     const anchor = (event.target.ownerDocument || document).querySelector(
-      '#Intro',
+      '#Home',
     );
 
     if (anchor) {
@@ -233,4 +218,3 @@ function ScrollTop(props) {
     </Fade>
   );
 }
-

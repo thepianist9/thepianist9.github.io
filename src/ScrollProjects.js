@@ -2,31 +2,18 @@
 
 import * as THREE from 'three'
 import { useRef, useState, useEffect } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Image, Environment, ScrollControls, useScroll, useTexture, Text } from '@react-three/drei'
 import { easing } from 'maath'
 import './util'
+import { ProjectData } from './store'
+import { useSnapshot } from 'valtio'
 
-export const ScrollProjects = ({lenis}) => (
-  <Rig position={[0,0,0]} rotation={[-0.05, 0, 0]} lenis={lenis}>
-    <Carousel />
-  </Rig>
-)
-
-function Rig({lenis, snap, ...props}) {
-  const ref = useRef()
+export const ScrollProjects = ({ lenis, snap }) => {
+  const projectSnap = useSnapshot(ProjectData)
   const scrollRef = useRef(0)
-  const [expandedCard, setExpandedCard] = useState(null)
   const lastScrollRef = useRef(0)
-  const targetRotationRef = useRef(0)
-
-  const navigateCard = (direction) => {
-    const cardCount = 8;
-    const newIndex = (expandedCard + direction + cardCount) % cardCount;
-    setExpandedCard(newIndex);
-    // Update target rotation
-    targetRotationRef.current += direction * (Math.PI * 2 / cardCount);
-  };
+  const [expandedCard, setExpandedCard] = useState(null)
 
   useEffect(() => {
     const onScroll = (e) => {
@@ -35,6 +22,7 @@ function Rig({lenis, snap, ...props}) {
       // Check if we've scrolled to a new "view"
       if (Math.abs(scrollRef.current - lastScrollRef.current) > 0.1) {
         setExpandedCard(null) // Reset expanded card
+        ProjectData.selectedProjectIndex = null // Reset selected project
         lastScrollRef.current = scrollRef.current
       }
     }
@@ -46,9 +34,10 @@ function Rig({lenis, snap, ...props}) {
     if (snap && typeof snap.onComplete === 'function') {
       const onSnapComplete = () => {
         // Calculate the index of the card in the center
-        const cardCount = 8; // Assuming 8 cards as in the Carousel component
+        const cardCount = ProjectData.projects.length;
         const centerCardIndex = Math.round(scrollRef.current * cardCount) % cardCount;
         setExpandedCard(centerCardIndex);
+        ProjectData.selectedProjectIndex = centerCardIndex;
       };
 
       snap.onComplete(onSnapComplete);
@@ -56,86 +45,96 @@ function Rig({lenis, snap, ...props}) {
     }
   }, [snap]);
 
+  return (
+    <Rig lenis={lenis} scrollRef={scrollRef}>
+      <Carousel 
+        selectedIndex={projectSnap.selectedProjectIndex} 
+        expandedCard={expandedCard}
+      />
+    </Rig>
+  )
+}
+
+function Rig({lenis, children, scrollRef, ...props}) {
+  const ref = useRef()
+  const projectSnap = useSnapshot(ProjectData)
+  const { viewport } = useThree()
+
   useFrame((state, delta) => {
-    if (expandedCard !== null) {
-      // Smoothly rotate the carousel to the target rotation
-      ref.current.rotation.y = THREE.MathUtils.lerp(
-        ref.current.rotation.y,
-        targetRotationRef.current,
-        0.1
-      );
-      // Move camera back when a card is expanded
-      easing.damp3(state.camera.position, [0, 0, 18], 0.3, delta)
+    if (projectSnap.selectedProjectIndex !== null) {
+      const targetRotation = -(projectSnap.selectedProjectIndex / ProjectData.projects.length) * Math.PI * 2 
+      easing.damp(ref.current.rotation, 'y', targetRotation, 0.3, delta)
+      easing.damp(ref.current.rotation, 'x', 0, 0.3, delta)
     } else {
-      // Normal rotation based on Lenis scroll
-      ref.current.rotation.y = scrollRef.current * Math.PI * 2
-      // Normal camera position
-      easing.damp3(state.camera.position, [-state.pointer.x * 2, state.pointer.y + 1.5, 10], 0.3, delta)
+      // Rotate based on scroll progress
+      const targetRotation = -scrollRef.current * Math.PI * 2
+      easing.damp(ref.current.rotation, 'y', targetRotation, 0.3, delta)
+      easing.damp(ref.current.rotation, 'x', 0.08, 0.3, delta)
     }
+
+    state.camera.position.set(0, 0, 10)
     state.camera.lookAt(0, 0, 0)
   })
-  
+
   return <group {...props}>
     <group ref={ref}>
-      <Carousel 
-        setExpandedCard={setExpandedCard} 
-        expandedCard={expandedCard} 
-      />
+      {children}
     </group>
-    {expandedCard !== null && (
-      <ExpandedCardUI
-        index={expandedCard}
-        onClose={() => setExpandedCard(null)}
-        onNavigate={navigateCard}
-      />
-    )}
   </group>
 }
 
-function Carousel({ radius = 2, count = 8, setExpandedCard, expandedCard }) {
+function Carousel({ selectedIndex, expandedCard }) {
+  const { viewport } = useThree()
+  const projectSnap = useSnapshot(ProjectData)
+  const isMobile = viewport.width < 5
+
+  // Adjust radius and image scale based on screen size
+  const radius = isMobile ? 1.5 : 2.5
+  const imageScale = isMobile ? 0.7 : 1
+
   return (
     <>
-      {Array.from({ length: count }, (_, i) => (
-        <Card
-          key={i}
-          index={i}
-          url={`/Projects/img${Math.floor(i % 10) + 1}_.jpg`}
-          position={[Math.sin((i / count) * Math.PI * 2) * radius, 0, Math.cos((i / count) * Math.PI * 2) * radius]}
-          rotation={[0, Math.PI + (i / count) * Math.PI * 2, 0]}
-          setExpandedCard={setExpandedCard}
-          isExpanded={expandedCard === i}
-        />
-      ))}
+      {ProjectData.projects.map((project, index) => {
+        const angle = (index / ProjectData.projects.length) * Math.PI * 2
+        return (
+          <Card
+            key={index}
+            index={index}
+            url={`${process.env.PUBLIC_URL}/img${Math.floor(index % 10) + 1}_.jpg`}
+            position={[
+              Math.sin(angle) * radius,
+              0,
+              Math.cos(angle) * radius
+            ]}
+            rotation={[0, Math.PI + angle, 0]}
+            scale={imageScale}
+            project={project}
+            onSelect={() => ProjectData.openProject(index)}
+            isSelected={selectedIndex === index}
+            isExpanded={expandedCard === index}
+          />
+        )
+      })}
     </>
   )
 }
 
-function Card({ url, index, setExpandedCard, isExpanded, ...props }) {
+function Card({ url, index, scale = 1, project, onSelect, isSelected, isExpanded, ...props }) {
   const ref = useRef()
   const [hovered, hover] = useState(false)
   const pointerOver = (e) => (e.stopPropagation(), hover(true))
   const pointerOut = () => hover(false)
-  const handleClick = () => setExpandedCard(index)
+
+  const handleClick = (e) => {
+    e.stopPropagation()
+    onSelect()
+  }
 
   useFrame((state, delta) => {
-    easing.damp3(ref.current.scale, isExpanded ? 2 : hovered ? 1.15 : 1, 0.1, delta)
+    const targetScale = isExpanded ? 1.5 * scale : isSelected ? 1.25 * scale : hovered ? 1.15 * scale : scale
+    easing.damp3(ref.current.scale, [targetScale, targetScale, targetScale], 0.1, delta)
     easing.damp(ref.current.material, 'radius', hovered ? 0.25 : 0.1, 0.2, delta)
     easing.damp(ref.current.material, 'zoom', hovered ? 1 : 1.5, 0.2, delta)
-    if (isExpanded) {
-      // When expanded, move to the center in world space
-      const targetPosition = new THREE.Vector3(0, 0, 3)
-      const targetQuaternion = new THREE.Quaternion()
-      
-      ref.current.parent.getWorldQuaternion(targetQuaternion).invert()
-      targetPosition.applyQuaternion(targetQuaternion)
-      
-      easing.damp3(ref.current.position, targetPosition, 0.2, delta)
-      easing.dampQ(ref.current.quaternion, targetQuaternion, 0.2, delta)
-    } else {
-      // When not expanded, use the original carousel position and rotation
-      easing.damp3(ref.current.position, props.position, 0.2, delta)
-      easing.dampE(ref.current.rotation, props.rotation, 0.2, delta)
-    }
   })
 
   return (
@@ -147,71 +146,11 @@ function Card({ url, index, setExpandedCard, isExpanded, ...props }) {
       onPointerOver={pointerOver} 
       onPointerOut={pointerOut} 
       onClick={handleClick}
+      scale={[scale, scale, scale]}
       {...props}
     >
       <bentPlaneGeometry args={[0.1, 1, 1, 20, 20]} />
     </Image>
-  )
-}
-
-function ExpandedCardUI({ index, onClose, onNavigate }) {
-  const descriptions = [
-    "Project 1 description",
-    "Project 2 description",
-    // ... add more descriptions for each project
-  ]
-
-  return (
-    <group>
-      <Text 
-        position={[0, 1.2, 3]} 
-        fontSize={0.2}
-        color="white"
-      >
-        {`Project ${index + 1}`}
-      </Text>
-      <Text 
-        position={[0, 0.8, 3]} 
-        fontSize={0.1}
-        color="white"
-        maxWidth={2}
-      >
-        {descriptions[index]}
-      </Text>
-      
-      {/* Left arrow button */}
-      <group position={[-2, 0, 3]} onClick={() => onNavigate(-1)}>
-        <mesh>
-          <circleGeometry args={[0.2, 32]} />
-          <meshBasicMaterial color="white" />
-        </mesh>
-        <Text position={[0, 0, 0.01]} fontSize={0.2} color="black">
-          {"<"}
-        </Text>
-      </group>
-      
-      {/* Right arrow button */}
-      <group position={[2, 0, 3]} onClick={() => onNavigate(1)}>
-        <mesh>
-          <circleGeometry args={[0.2, 32]} />
-          <meshBasicMaterial color="white" />
-        </mesh>
-        <Text position={[0, 0, 0.01]} fontSize={0.2} color="black">
-          {">"}
-        </Text>
-      </group>
-      
-      {/* Close button */}
-      <group position={[0, -1.2, 3]} onClick={onClose}>
-        <mesh>
-          <planeGeometry args={[0.8, 0.3]} />
-          <meshBasicMaterial color="white" />
-        </mesh>
-        <Text position={[0, 0, 0.01]} fontSize={0.15} color="black">
-          Close
-        </Text>
-      </group>
-    </group>
   )
 }
 

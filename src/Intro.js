@@ -20,52 +20,47 @@ export function Intro() {
     text: 'David',
     backside: true,
     backsideThickness: 0.3,
-    samples: 8,
+    samples: 16,
     resolution: 512,
-    transmission: 1,
-    clearcoat: 0,
-    clearcoatRoughness: 0.0,
-    thickness: 0.3,
-    chromaticAberration: 5,
+    transmission: 0.8,
+    clearcoat: 0.1,
+    clearcoatRoughness: 0.1,
+    thickness: 0.4,
+    chromaticAberration: 1,
     anisotropy: 0.3,
-    roughness: 0,
-    distortion: 0.5,
-    distortionScale: 0.1,
-    temporalDistortion: 0,
+    roughness: 0.2,
+    distortion: 0.3,
+    distortionScale: 0.2,
+    temporalDistortion: 0.1,
     ior: 1.5,
-    color: '#1ACCE8',
-    gColor: '#52544F',
-    shadow: "#000",
-    autoRotate: false,
-    }
+    color: '#4a90e2', // Changed to a medium blue color
+    gColor: '#ffa500', // Changed to cyan for a blue glow effect
+    autoRotate: true,
+  }
   return (
-    <>
+    <><color attach="background" args={['#121212']} />
       {/** The text and the grid */}
       <Text config={config} rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 2.25]}>
         {text}
       </Text>
       {/** Controls */}
-      <OrbitControls autoRotate={"on"} enableZoom={false} enablePan={false} enableDamping dampingFactor={0.1} rotateSpeed={0.25} />
+      <OrbitControls autoRotate={autoRotate} enableZoom={false} enablePan={false} enableDamping dampingFactor={0.1} rotateSpeed={0.25} />
 
       {/** The environment is just a bunch of shapes emitting light. This is needed for the clear-coat */}
-      <Environment resolution={32}>
+      <Environment resolution={16}>
         <group rotation={[-Math.PI / 4, -0.3, 0]}>
-          <Lightformer type="ring" intensity={2} rotation-y={Math.PI / 2} position={[-0.1, -1, -5]} scale={10} />
+          <Lightformer type="ring" intensity={10} rotation-y={Math.PI / 2} position={[-0.1, -1, -5]} scale={20} />
         </group>
       </Environment>
-      {/** Soft shadows */}
-      <AccumulativeShadows frames={50} color={shadow} colorBlend={5} toneMapped={true} alphaTest={0.9} opacity={1} scale={30} position={[0, -1.01, 0]}>
-        <RandomizedLight amount={4} radius={10} ambient={0.5} intensity={1} position={[0, 10, -10]} size={15} mapSize={1024} bias={0.0001} />
-      </AccumulativeShadows>
     </>
   );
 }
 
-const Grid = ({ number = 6.5, lineWidth = 0.026, height = 0.5, config }) => (
+const Grid = ({ number = 6.5, lineWidth = 0.026, height = 0.25, config }) => (
   // Renders a grid and crosses as instances
-  <Instances position={[0, -1.02, 0]}>
+  <Instances position={[0.5, -1.02, 0.5]}>
     <planeGeometry args={[lineWidth, height]}/>
-    <meshStandardMaterial color={"#000"} emissive={"#000"} emissiveIntensity={1} toneMapped={false} />
+    <meshBasicMaterial color="#fff" toneMapped={false} />
     {Array.from({ length: number }, (_, y) =>
       Array.from({ length: number }, (_, x) => (
         <group key={x + ':' + y} position={[x * 2 - Math.floor(number / 2) * 2, -0.01, y * 2 - Math.floor(number / 2) * 2]}>
@@ -77,7 +72,7 @@ const Grid = ({ number = 6.5, lineWidth = 0.026, height = 0.5, config }) => (
   </Instances>
 )
 
-function Text({ children, config, font = '/Inter_Medium_Regular.json', ...props }) {
+function Text({ children, config, font = `${process.env.PUBLIC_URL}/Inter_Medium_Regular.json`, ...props }) {
   return (
     <>
       <group>

@@ -14,7 +14,9 @@ body,
   /* overflow: auto; */
   padding: 0;
   pointer-events: auto;
+  
 }
+
 .scroll {
   width: 100vw;
   height: 500vh;
@@ -25,16 +27,51 @@ body,
   z-index: 10;
 }
 .dot {
+    position: sticky;
+    top: 0px; 
+    display: inline-block;
+    max-width: 600px;
+    padding: 0;
+    padding: 80px;
+    line-height: 1.6em;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+  }
+.dot1 {
   position: sticky;
   top: 0px; 
   display: inline-block;
   max-width: 600px;
   padding: 0;
   padding: 80px;
-  color: black;
   line-height: 1.6em;
   font-size: 15px;
   letter-spacing: 1.5px;
+}
+.project-container {
+  width: 80%;
+  max-width: 1200px;
+}
+
+.project-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.project-info {
+  flex: 1;
+  padding: 20px;
+}
+
+.project-image {
+  flex: 2;
+  text-align: center;
+}
+
+.project-image img {
+  max-width: 100%;
+  height: auto;
 }
 
 .no-scroll {
@@ -72,7 +109,7 @@ body,
 }
 
 body {
-  background: #fff;
+  background: #151414;
   font-family: inter;
 }
 .caption {
@@ -119,9 +156,6 @@ body {
   height: 100vh; /* Full viewport height */
 }
 
-svg {
-  fill: #a0a0a0;
-}
 
 
 /* Loading Screen */
