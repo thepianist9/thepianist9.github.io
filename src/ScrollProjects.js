@@ -46,12 +46,14 @@ export const ScrollProjects = ({ lenis, snap }) => {
   }, [snap]);
 
   return (
+    <>
     <Rig lenis={lenis} scrollRef={scrollRef}>
       <Carousel 
         selectedIndex={projectSnap.selectedProjectIndex} 
         expandedCard={expandedCard}
       />
     </Rig>
+    </>
   )
 }
 
@@ -65,11 +67,13 @@ function Rig({lenis, children, scrollRef, ...props}) {
       const targetRotation = -(projectSnap.selectedProjectIndex / ProjectData.projects.length) * Math.PI * 2 
       easing.damp(ref.current.rotation, 'y', targetRotation, 0.3, delta)
       easing.damp(ref.current.rotation, 'x', 0, 0.3, delta)
+      easing.damp(ref.current.rotation, 'z', 0, 0.3, delta)
     } else {
-      // Rotate based on scroll progress
-      const targetRotation = -scrollRef.current * Math.PI * 2
-      easing.damp(ref.current.rotation, 'y', targetRotation, 0.3, delta)
-      easing.damp(ref.current.rotation, 'x', 0.08, 0.3, delta)
+      // Rotate based on scroll position when no card is selected
+      const scrollRotation = scrollRef.current * Math.PI * 2
+      easing.damp(ref.current.rotation, 'y', -scrollRotation, 0.3, delta)
+      easing.damp(ref.current.rotation, 'x', 0, 0.3, delta)
+      easing.damp(ref.current.rotation, 'z', 0.1, 0.3, delta)
     }
 
     state.camera.position.set(0, 0, 10)
@@ -90,28 +94,29 @@ function Carousel({ selectedIndex, expandedCard }) {
 
   // Adjust radius and image scale based on screen size
   const radius = isMobile ? 1.5 : 2.5
-  const imageScale = isMobile ? 0.7 : 1
+  const imageScale = isMobile ? 0.8 : 1
 
   return (
     <>
       {ProjectData.projects.map((project, index) => {
         const angle = (index / ProjectData.projects.length) * Math.PI * 2
+        const isSelected = selectedIndex === index
         return (
           <Card
             key={index}
             index={index}
-            url={`${process.env.PUBLIC_URL}/img${Math.floor(index % 10) + 1}_.jpg`}
+            url={`${process.env.PUBLIC_URL}/Projects/img${Math.floor(index % 10) + 1}_.jpg`}
             position={[
               Math.sin(angle) * radius,
               0,
               Math.cos(angle) * radius
             ]}
-            rotation={[0, Math.PI + angle, 0]}
+            rotation={[0, angle + Math.PI, 0]}
             scale={imageScale}
             project={project}
             onSelect={() => ProjectData.openProject(index)}
-            isSelected={selectedIndex === index}
-            isExpanded={expandedCard === index}
+            isSelected={isSelected}
+            isDarkened={selectedIndex !== null && !isSelected}
           />
         )
       })}
@@ -119,7 +124,7 @@ function Carousel({ selectedIndex, expandedCard }) {
   )
 }
 
-function Card({ url, index, scale = 1, project, onSelect, isSelected, isExpanded, ...props }) {
+function Card({ url, index, scale = 2, project, onSelect, isSelected, isDarkened, ...props }) {
   const ref = useRef()
   const [hovered, hover] = useState(false)
   const pointerOver = (e) => (e.stopPropagation(), hover(true))
@@ -131,42 +136,31 @@ function Card({ url, index, scale = 1, project, onSelect, isSelected, isExpanded
   }
 
   useFrame((state, delta) => {
-    const targetScale = isExpanded ? 1.5 * scale : isSelected ? 1.25 * scale : hovered ? 1.15 * scale : scale
-    easing.damp3(ref.current.scale, [targetScale, targetScale, targetScale], 0.1, delta)
-    easing.damp(ref.current.material, 'radius', hovered ? 0.25 : 0.1, 0.2, delta)
-    easing.damp(ref.current.material, 'zoom', hovered ? 1 : 1.5, 0.2, delta)
+    const targetScale = isSelected ? 1.5 * scale : hovered ? 1.1 * scale : scale
+    easing.damp3(ref.current.scale, [targetScale/1.2, targetScale/1.2, targetScale/1.2], 0.1, delta)
+    easing.damp(ref.current.material, 'radius', hovered ? 0.25 : 0.1, 0.2, delta/2)
+    easing.damp(ref.current.material, 'zoom', hovered ? 1.25 : 1, 0.2, delta)
+    
+    // Adjust opacity based on isDarkened
+    easing.damp(ref.current.material, 'opacity', isDarkened ? 0.1 : 1, 0.2, delta)
   })
 
   return (
     <Image 
       ref={ref} 
       url={url} 
-      transparent 
-      side={THREE.DoubleSide} 
+      side={THREE.DoubleSide}
+      zoom={1} 
+      transparent={true}
       onPointerOver={pointerOver} 
       onPointerOut={pointerOut} 
       onClick={handleClick}
       scale={[scale, scale, scale]}
+      toneMapped={false}
+      flipY={false}
       {...props}
     >
       <bentPlaneGeometry args={[0.1, 1, 1, 20, 20]} />
     </Image>
-  )
-}
-
-function Banner(props) {
-  const ref = useRef()
-  const texture = useTexture('/work_.png')
-  texture.wrapS = texture.wrapT = THREE.RepeatWrapping
-  const scroll = useScroll()
-  useFrame((state, delta) => {
-    ref.current.material.time.value += Math.abs(scroll.delta) * 4
-    ref.current.material.map.offset.x += delta / 2
-  })
-  return (
-    <mesh ref={ref} {...props}>
-      <cylinderGeometry args={[1.6, 1.6, 0.14, 128, 16, true]} />
-      <meshSineMaterial map={texture} map-anisotropy={16} map-repeat={[30, 1]} side={THREE.DoubleSide} toneMapped={false} />
-    </mesh>
   )
 }
