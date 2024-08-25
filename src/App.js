@@ -173,7 +173,6 @@ export function App() {
           </PerformanceMonitor>
         </Canvas>
       </Suspense>
-
       {isLoaded && <ResponsiveAppBar lenis={lenisRef.current}/>}
       <LoadingScreen onLoaded={handleLoaded} />
       {isLoaded && <Overlay />}

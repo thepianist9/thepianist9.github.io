@@ -71,7 +71,7 @@ function Rig({lenis, children, scrollRef, ...props}) {
     } else {
       // Rotate based on scroll position when no card is selected
       const scrollRotation = scrollRef.current * Math.PI * 2
-      easing.damp(ref.current.rotation, 'y', -scrollRotation, 0.3, delta)
+      easing.damp(ref.current.rotation, 'y', -scrollRotation, 0.2, delta)
       easing.damp(ref.current.rotation, 'x', 0, 0.3, delta)
       easing.damp(ref.current.rotation, 'z', 0.1, 0.3, delta)
     }
@@ -111,7 +111,7 @@ function Carousel({ selectedIndex, expandedCard }) {
               0,
               Math.cos(angle) * radius
             ]}
-            rotation={[0, angle + Math.PI, 0]}
+            rotation={[0, angle, 0]}
             scale={imageScale}
             project={project}
             onSelect={() => ProjectData.openProject(index)}
@@ -124,7 +124,7 @@ function Carousel({ selectedIndex, expandedCard }) {
   )
 }
 
-function Card({ url, index, scale = 2, project, onSelect, isSelected, isDarkened, ...props }) {
+function Card({ url, index, scale = 1, project, onSelect, isSelected, isDarkened, ...props }) {
   const ref = useRef()
   const [hovered, hover] = useState(false)
   const pointerOver = (e) => (e.stopPropagation(), hover(true))
@@ -136,10 +136,10 @@ function Card({ url, index, scale = 2, project, onSelect, isSelected, isDarkened
   }
 
   useFrame((state, delta) => {
-    const targetScale = isSelected ? 1.5 * scale : hovered ? 1.1 * scale : scale
-    easing.damp3(ref.current.scale, [targetScale/1.2, targetScale/1.2, targetScale/1.2], 0.1, delta)
+    const targetScale = isSelected ? 1.25 * scale : hovered ? 1.1 * scale : scale
+    easing.damp3(ref.current.scale, [targetScale, targetScale, targetScale], 0.1, delta)
     easing.damp(ref.current.material, 'radius', hovered ? 0.25 : 0.1, 0.2, delta/2)
-    easing.damp(ref.current.material, 'zoom', hovered ? 1.25 : 1, 0.2, delta)
+    easing.damp(ref.current.material, 'zoom', hovered ? 1 : 0.8, 0.2, delta)
     
     // Adjust opacity based on isDarkened
     easing.damp(ref.current.material, 'opacity', isDarkened ? 0.1 : 1, 0.2, delta)
@@ -150,17 +150,16 @@ function Card({ url, index, scale = 2, project, onSelect, isSelected, isDarkened
       ref={ref} 
       url={url} 
       side={THREE.DoubleSide}
-      zoom={1} 
       transparent={true}
       onPointerOver={pointerOver} 
       onPointerOut={pointerOut} 
       onClick={handleClick}
-      scale={[scale, scale, scale]}
+      scale={scale}
       toneMapped={false}
       flipY={false}
       {...props}
     >
-      <bentPlaneGeometry args={[0.1, 1, 1, 20, 20]} />
+
     </Image>
   )
 }

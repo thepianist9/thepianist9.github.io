@@ -25,6 +25,7 @@ export function Overlay() {
               width: "100%",
               height: "100%",
               display: "flex",
+              left: "100px",
               justifyContent: "center",
               alignItems: "center",
               position: "absolute",
@@ -34,7 +35,7 @@ export function Overlay() {
                 width: "30%",
                 padding: "20px",
                 color: "white",
-                textAlign: "right",
+                textAlign: "left",
               }}>
                 <h2>{selectedProject.title}</h2>
                 <p>{selectedProject.description}</p>
@@ -144,17 +145,7 @@ export function Overlay() {
     const snap = useSnapshot(experiencesData);
 
     return (
-      <div style={{ height: "100vh", position: "relative" }}>
-        <style>
-          {`
-            @font-face {
-              font-family: 'Inter Bold';
-              src: url('/inter-bold.woff') format('woff');
-              font-weight: bold;
-              font-style: normal;
-            }
-          `}
-        </style>
+      <div style={{ height: "100vh", position: "relative"}}>
         <div className="experience-overlay" style={{
           position: "absolute",
           top: 0,
@@ -163,36 +154,53 @@ export function Overlay() {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
-          padding: "20px",
+          padding: "40px",
           boxSizing: "border-box",
-          pointerEvents: "none",
-          fontFamily: "'Inter Bold', sans-serif",
+          fontFamily: "'Inter', sans-serif",
         }}>
-          <h1 style={{ color: "white", textAlign: "center", fontFamily: 'Inter Bold', fontSize: "2rem", marginBottom: "20px" }}>Experiences</h1>
+          <h1 style={{ color: "white", textAlign: "center", fontSize: "2.5rem", marginBottom: "40px" }}>Experiences</h1>
           
           {snap.activeExperience && (
-            <>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <div style={{ maxWidth: "30%" }}>
-                  <h2 style={{ color: "white" }}>{snap[snap.activeExperience].company}</h2>
-                  <h3 style={{ color: "white" }}>{snap[snap.activeExperience].position}</h3>
-                  <ul style={{ color: "white", listStyleType: "none", padding: 0 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div style={{ width: "40%" }}>
+                <h2 style={{ color: "white", fontSize: "2rem", marginBottom: "10px" }}>{snap[snap.activeExperience].company}</h2>
+                <h3 style={{ color: "white", fontSize: "1.5rem", marginBottom: "20px" }}>{snap[snap.activeExperience].position}</h3>
+                <ul style={{ color: "white", listStyleType: "disc", paddingLeft: "20px", fontSize: "1rem", marginBottom: "20px" }}>
                   {snap[snap.activeExperience].tasks.map((task, index) => (
-                    <li key={index}>{task}</li>
+                    <li key={index} style={{ marginBottom: "10px" }}>{task}</li>
                   ))}
                 </ul>
-                </div>
-                
-                <div style={{ maxWidth: "30%", textAlign: "right" }}>
-                  <p style={{ color: "white" }}>{snap[snap.activeExperience].duration}</p>
-                </div>
+                {snap[snap.activeExperience].link && (
+                  <a 
+                    href={snap[snap.activeExperience].link} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    style={{ color: "lightblue", fontSize: "1rem", textDecoration: "none" }}
+                  >
+                    {snap[snap.activeExperience].link}
+                  </a>
+                )}
+                {(snap[snap.activeExperience].technologies || snap[snap.activeExperience].languages) && (
+                  <div>
+                    <h4 style={{ color: "white", fontSize: "1.2rem", marginBottom: "10px" }}>Tech & Languages:</h4>
+                    <p style={{ color: "white", fontSize: "1rem", marginBottom: "10px" }}>
+                      {[...(snap[snap.activeExperience].technologies || []), ...(snap[snap.activeExperience].languages || [])].join(', ')}
+                    </p>
+                  </div>
+                )}
+
               </div>
               
-              <div style={{ maxWidth: "80%", margin: "0 auto" }}>
-                
+              <div style={{ width: "40%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+
               </div>
-            </>
+              
+              <div style={{ position: "absolute", top: "20px", right: "20px", textAlign: "right" }}>
+                {snap[snap.activeExperience].duration && (
+                  <p style={{ color: "white", fontSize: "1.2rem" }}>{snap[snap.activeExperience].duration}</p>
+                )}
+              </div>
+            </div>
           )}
         </div>
       </div>
@@ -218,18 +226,30 @@ export function Overlay() {
     <Experience />
 
     <Projects />
-    <div style={{ height: "100vh" }}>
-      <div class="dot">
+    <div style={{ 
+      height: "100vh", 
+      position: "relative", 
+      zIndex: 10,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center"
+    }}>
+      <div className="dot" style={{ 
+        position: "relative", 
+        zIndex: 11,
+        textAlign: "center",
+        pointerEvents: "none" // Added this line
+      }}>
         <h1 style={{color: "white"}}>Contact me</h1>
         <p>Feel free to reach out through any of the following platforms:</p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
-          <a href="https://www.linkedin.com/in/your-profile" target="_blank" rel="noopener noreferrer" style={buttonStyle}>
+          <a href="https://www.linkedin.com/in/david-victor-anthony/" target="_blank" rel="noopener noreferrer" style={{...buttonStyle, pointerEvents: 'auto'}}>
             LinkedIn
           </a>
-          <a href="mailto:your.email@gmail.com" style={buttonStyle}>
+          <a href="mailto:anthonydavidvictor@gmail.com" style={{...buttonStyle, pointerEvents: 'auto'}}>
             Gmail
           </a>
-          <a href="https://github.com/your-username" target="_blank" rel="noopener noreferrer" style={buttonStyle}>
+          <a href="https://github.com/thepianist9" target="_blank" rel="noopener noreferrer" style={{...buttonStyle, pointerEvents: 'auto'}}>
             GitHub
           </a>
         </div>
