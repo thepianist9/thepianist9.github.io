@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "./static/css/main.38edbcfb.css",
-    "main.js": "./static/js/main.809b3e41.js",
-    "index.html": "./index.html",
-    "main.38edbcfb.css.map": "./static/css/main.38edbcfb.css.map",
-    "main.809b3e41.js.map": "./static/js/main.809b3e41.js.map"
+    "main.css": "./DavidsMetaverse/static/css/main.38edbcfb.css",
+    "main.js": "./DavidsMetaverse/static/js/main.7eec1842.js",
+    "index.html": "./DavidsMetaverse/index.html",
+    "main.38edbcfb.css.map": "./DavidsMetaverse/static/css/main.38edbcfb.css.map",
+    "main.7eec1842.js.map": "./DavidsMetaverse/static/js/main.7eec1842.js.map"
   },
   "entrypoints": [
     "static/css/main.38edbcfb.css",
-    "static/js/main.809b3e41.js"
+    "static/js/main.7eec1842.js"
   ]
 }
