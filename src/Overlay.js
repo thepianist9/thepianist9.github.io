@@ -214,13 +214,11 @@ export function Overlay() {
     <div style={{ height: "100vh", width: "100vw"}}>
       <div class="dot">
         <h1 style={{color: "white"}}>Welcome to my side of the Metaverse</h1>
-        Virtual reality (VR) is a simulated experience that can be similar to or completely different from the real world.
       </div>
     </div>
     <div style={{ height: "100vh" }}>
       <div class="dot">
         <h1 style={{color: "white"}}>My Toolset</h1>
-        Headphones are a pair of small loudspeaker drivers worn on or around the head over a user's ears.
       </div>
     </div>
     <Experience />
