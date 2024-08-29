@@ -19,100 +19,73 @@ const imagePaths = [
 
 ];
 
-const useScreenSize = () => {
-  const [size, setSize] = useState({ width: window.innerWidth, height: window.innerHeight })
+export const Experiences = ({ isMobile }) => {
+    const aspectRatio = window.innerWidth / window.innerHeight
 
-  useEffect(() => {
-    const handleResize = () => {
-      setSize({ width: window.innerWidth, height: window.innerHeight })
+    const getImagePositions = (isMobile, aspectRatio) => {
+        const scale = isMobile ? 0.6 : 1 // Adjust scale for mobile
+
+        if (isMobile) {
+            return [
+                // Front
+                { position: [0, 0, 1.5 * scale], rotation: [0, 0, 0], url: imagePaths[0] },
+                // Left
+                { position: [-1.75 * aspectRatio * scale, 0, 2 * scale], rotation: [0, Math.PI / 2.5, 0], url: imagePaths[1] },
+                { position: [-2 * aspectRatio * scale, 0, 6 * scale], rotation: [0, Math.PI / 2.5, 0], url: imagePaths[2] },
+                // Right
+                { position: [1.75 * aspectRatio * scale, 0, 2 * scale], rotation: [0, -Math.PI / 2.5, 0], url: imagePaths[3] },
+                { position: [2 * aspectRatio * scale, 0, 6 * scale], rotation: [0, -Math.PI / 2.5, 0], url: imagePaths[4] }
+            ]
+        } else {
+            return [
+                // Front
+                { position: [0, 0, 1.5 * scale], rotation: [0, 0, 0], url: imagePaths[0] },
+                // Left
+                { position: [-1.25 * aspectRatio * scale, 0, 0.75 * scale], rotation: [0, Math.PI / 3, 0], url: imagePaths[1] },
+                { position: [-1.5 * aspectRatio * scale, 0, 2 * scale], rotation: [0, Math.PI / 3, 0], url: imagePaths[2] },
+                // Right
+                { position: [1.25 * aspectRatio * scale, 0, 0.75 * scale], rotation: [0, -Math.PI / 3, 0], url: imagePaths[3] },
+                { position: [1.5 * aspectRatio * scale, 0, 2 * scale], rotation: [0, -Math.PI / 3, 0], url: imagePaths[4] }
+            ]
+        }
     }
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
 
-  return size
-}
-
-const getImagePositions = (screenWidth, screenHeight) => {
-  const aspectRatio = screenWidth / screenHeight
-  const scale = Math.min(screenWidth, screenHeight) / 1200 // Adjust this value to change overall scale
-
-
-  if(screenWidth < 800){
-    return [
-      // Front
-      { position: [0, 0, 1.5 * scale], rotation: [0, 0, 0], url: imagePaths[0] },
-      // Left
-      { position: [-1.75 * aspectRatio * scale, 0, 2 * scale], rotation: [0, Math.PI / 2.5, 0], url: imagePaths[1] },
-      { position: [-2 * aspectRatio * scale, 0, 6 * scale], rotation: [0, Math.PI / 2.5, 0], url: imagePaths[2] },
-      // Right
-      { position: [1.75 * aspectRatio * scale, 0, 2 * scale], rotation: [0, -Math.PI / 2.5, 0], url: imagePaths[3] },
-      { position: [2 * aspectRatio * scale, 0, 6 * scale], rotation: [0, -Math.PI / 2.5, 0], url: imagePaths[4] }
-    ]
-  }
-  if(screenWidth < 1700){
-    return [
-      // Front
-      { position: [0, 0, 1.5 * scale], rotation: [0, 0, 0], url: imagePaths[0] },
-      // Left
-      { position: [-1.75 * aspectRatio * scale, 0, 1 * scale], rotation: [0, Math.PI / 2.5, 0], url: imagePaths[1] },
-      { position: [-2 * aspectRatio * scale, 0, 5 * scale], rotation: [0, Math.PI / 2.5, 0], url: imagePaths[2] },
-      // Right
-      { position: [1.75 * aspectRatio * scale, 0, 1 * scale], rotation: [0, -Math.PI / 2.5, 0], url: imagePaths[3] },
-      { position: [2 * aspectRatio * scale, 0, 5 * scale], rotation: [0, -Math.PI / 2.5, 0], url: imagePaths[4] }
-    ]
-  }
-  else{
-    return [
-      // Front
-      { position: [0, 0, 1.5 * scale], rotation: [0, 0, 0], url: imagePaths[0] },
-      // Left
-      { position: [-1.75 * aspectRatio * scale, 0, 1 * scale], rotation: [0, Math.PI / 2.5, 0], url: imagePaths[1] },
-      { position: [-2 * aspectRatio * scale, 0, 2.7 * scale], rotation: [0, Math.PI / 2.5, 0], url: imagePaths[2] },
-      // Right
-      { position: [1.75 * aspectRatio * scale, 0, 1 * scale], rotation: [0, -Math.PI / 2.5, 0], url: imagePaths[3] },
-      { position: [2 * aspectRatio * scale, 0, 2.7 * scale], rotation: [0, -Math.PI / 2.5, 0], url: imagePaths[4] }
-    ]
-  }
-
-
-}
-
-export const Experiences = () => {
-    const { width, height } = useScreenSize()
-    const images = getImagePositions(width, height)
+    const images = getImagePositions(isMobile, aspectRatio)
     console.log(images)
+
     return(
         <>
             <Lights preset="city" />
             <PerspectiveCamera makeDefault position={[0, 2, 10]} fov={70} />
             <fog attach="fog" args={['#191920', 0, 15]} />
             <group position={[0, -0.5, 0]}>
-            <Frames images={images} />
-            <mesh rotation={[-Math.PI / 2, 0, 0]}>
-            <planeGeometry args={[25, 25]} />
-            <MeshReflectorMaterial
-                blur={[300, 100]}
-                resolution={2048}
-                mixBlur={1}
-                mixStrength={80}
-                roughness={1}
-                depthScale={1.2}
-                minDepthThreshold={0.4}
-                maxDepthThreshold={1.4}
-                color="#050505"
-                metalness={0.8}
-            />
-            </mesh>
+                <Frames images={images} isMobile={isMobile} />
+                <Floor />
             </group>
         </>
     )
- 
-};
+}
 
+// Separate component for the floor
+const Floor = () => (
+    <mesh rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[8, 10]} />
+        <MeshReflectorMaterial
+            blur={[300, 100]}
+            resolution={1024} // Reduced from 2048
+            mixBlur={1}
+            mixStrength={40} // Reduced from 80
+            roughness={1}
+            depthScale={1.2}
+            minDepthThreshold={0.4}
+            maxDepthThreshold={1.4}
+            color="#030303" // Darker color
+            metalness={0.8} // Reduced from 0.8
+        />
+    </mesh>
+)
 
-
-function Frames({ images, q = new THREE.Quaternion(), p = new THREE.Vector3() }) {
+function Frames({ images, isMobile, q = new THREE.Quaternion(), p = new THREE.Vector3() }) {
   const ref = useRef()
   const clicked = useRef()
   const [, params] = useRoute('/item/:id')
@@ -125,7 +98,7 @@ function Frames({ images, q = new THREE.Quaternion(), p = new THREE.Vector3() })
     clicked.current = ref.current.getObjectByName(params?.id)
     if (clicked.current) {
       clicked.current.parent.updateWorldMatrix(true, true)
-      const newPosition = new THREE.Vector3(0, GOLDENRATIO / 2, 1.6)
+      const newPosition = new THREE.Vector3(0, isMobile ? GOLDENRATIO/4 : GOLDENRATIO / 2, isMobile ? 2.2 : 1.6)
       clicked.current.parent.localToWorld(newPosition)
       const newQuaternion = new THREE.Quaternion()
       clicked.current.parent.getWorldQuaternion(newQuaternion)
@@ -139,14 +112,14 @@ function Frames({ images, q = new THREE.Quaternion(), p = new THREE.Vector3() })
         experiencesData.activeExperience = selectedImage.url
       }
     } else {
-      setTargetPosition(new THREE.Vector3(0, 0, 5.5))
+      setTargetPosition(new THREE.Vector3(0, isMobile ? 0 :0, isMobile ? 6 : 5.5)) 
       setTargetQuaternion(new THREE.Quaternion())
       setActiveFrame(null)
       
       // Clear the selectedFrameUrl when no frame is selected
-        experiencesData.activeExperience = null
+      experiencesData.activeExperience = null
     }
-  }, [params, images])
+  }, [params, images, isMobile])
 
   useFrame((state, dt) => {
     easing.damp3(state.camera.position, targetPosition, 0.4, dt)
@@ -170,13 +143,14 @@ function Frames({ images, q = new THREE.Quaternion(), p = new THREE.Vector3() })
           {...props} 
           active={activeFrame === getUuid(props.url)}
           isAnyActive={activeFrame !== null}
+          isMobile={isMobile}
         />
       ))}
     </group>
   )
 }
 
-function Frame({ url, active, isAnyActive, ...props }) 
+function Frame({ url, active, isAnyActive, isMobile, ...props }) 
 {
   const image = useRef()
   const frame = useRef()
@@ -188,14 +162,16 @@ function Frame({ url, active, isAnyActive, ...props })
     return null
   }
 
+  const scale = isMobile ? 0.5 : 1 // Adjust scale for mobile
+
   return (
     <group {...props}>
       <mesh
         name={name}
         onPointerOver={(e) => (e.stopPropagation(), hover(true))}
         onPointerOut={() => { hover(false) }}
-        scale={[1, GOLDENRATIO, 0.05]}
-        position={[0, GOLDENRATIO / 2, 0]}>
+        scale={[1 * scale, GOLDENRATIO * scale, 0.05 * scale]}
+        position={[0, (GOLDENRATIO / 2) * scale, 0]}>
         <boxGeometry />
         <meshStandardMaterial color="#151515" metalness={0.5} roughness={0.5} envMapIntensity={2} />
         <mesh ref={frame} raycast={() => null} scale={[0.9, 0.93, 0.9]} position={[0, 0, 0]}>
@@ -205,7 +181,7 @@ function Frame({ url, active, isAnyActive, ...props })
         <Image raycast={() => null} ref={image} position={[0, 0, 0.6]} scale={[0.9, 0.94, 1]} url={url} zoom={0.6} />
       </mesh>
       {!active && (
-        <Text maxWidth={0.1} anchorX="left" anchorY="top" position={[0.55, GOLDENRATIO, 0]} fontSize={0.025}>
+        <Text maxWidth={0.1} anchorX="left" anchorY="top" position={[0.55 * scale, GOLDENRATIO * scale, 0]} fontSize={0.025 * scale}>
           {name.split('-').join(' ')}
         </Text>
       )}

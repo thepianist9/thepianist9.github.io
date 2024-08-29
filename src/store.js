@@ -29,15 +29,16 @@ const experiencesData = proxy({
     link: 'https://www.mercedes-benz.com'
 },
     '/Experiences/infosys.jpeg': {
-        company: 'Technische Universität Dresden',
-        position: 'Research Assistant',
+        company: 'Infosys',
+        position: 'Intern',
         duration: 'Oct 2022 - Present',
         tasks: [
-            'Developed machine learning models for image processing',
-            'Conducted research on computer vision algorithms'
+            'Developed web applications using Java with Spring framework',
+            'Worked on database management and optimization using SQL',
+            'Implemented backend logic and data processing with Python'
         ],
-        technologies: ['Python', 'TensorFlow', 'OpenCV'],
-        languages: ['Python', 'C++'],
+        technologies: ['Spring Framework', 'SQL', 'Web Development'],
+        languages: ['Java', 'Python', 'SQL'],
     },
   '/Experiences/hhi.png': {
     company: 'Fraunhofer Institute',

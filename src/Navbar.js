@@ -19,6 +19,7 @@ import Avatar from '@mui/material/Avatar';
 import Fab from '@mui/material/Fab';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Fade from '@mui/material/Fade';
+import Collapse from '@mui/material/Collapse';
 
 const pages = ['Home', 'Skills', 'Experiences', 'Projects', 'Contact '];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -62,116 +63,73 @@ HideOnScroll.propTypes = {
 };
 
 export function ResponsiveAppBar(props) {
-  const { lenis, visible } = props;
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
-
-  const handleClickNavbar = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const { lenis } = props;
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const handleNavClick = (event, targetId) => {
     event.preventDefault();
-    console.log(targetId)
     const anchor = document.querySelector(`#${targetId}`);
-
     if (anchor) {
-      console.log(`Scrolling to ${targetId}`);
       lenis.scrollTo(anchor);
       anchor.scrollIntoView({
         block: 'center',
       });
     }
-    handleCloseNavMenu();
+    setMobileMenuOpen(false);
   };
 
   return (
     <React.Fragment>
       <CssBaseline />
-        <AppBar sx={{backgroundColor:'transparent',  boxShadow: 'none'}}>
-          <Toolbar>
-
-
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }, justifyContent: 'center' }}>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: 'block', md: 'none' },
+      <AppBar sx={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', boxShadow: 'none' }}>
+        <Container maxWidth={false} disableGutters>
+          <Toolbar sx={{ width: '100%', maxWidth: 'lg', margin: '0 auto', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <IconButton
+                size="large"
+                aria-label="menu"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                sx={{ display: { xs: 'flex', md: 'none' }, color: 'white', mr: 1 }}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Box sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'row', alignItems: 'center' }}>
+                {pages.map((page) => (
+                  <Button
+                    key={page}
+                    onClick={(event) => handleNavClick(event, page.replace(/\s+/g, ''))}
+                    sx={{ color: 'white', display: 'block', mx: 1 }}
+                  >
+                    {page}
+                  </Button>
+                ))}
+              </Box>
+            </Box>
+            <Avatar alt="Profile" src={`${process.env.PUBLIC_URL}/profile/profile_pic.jpg`} />
+          </Toolbar>
+          <Collapse in={mobileMenuOpen} timeout="auto" unmountOnExit>
+            <Box 
+              sx={{ 
+                display: { xs: 'flex', md: 'none' }, 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                width: '100%',
+                pb: 2
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={(event) => handleNavClick(event, page.replace(/\s+/g, ''))}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
+                <Button
+                  key={page}
+                  onClick={(event) => handleNavClick(event, page.replace(/\s+/g, ''))}
+                  sx={{ color: 'white', display: 'block', my: 1 }}
+                >
+                  {page}
+                </Button>
               ))}
-            </Menu>
-          </Box>
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex' }, justifyContent: 'center' }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={(event) => handleNavClick(event, page.replace(/\s+/g, ''))}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src={`${process.env.PUBLIC_URL}/profile/profile_pic.jpg`} />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-
-        </Toolbar>
-        </AppBar>
+            </Box>
+          </Collapse>
+        </Container>
+      </AppBar>
       <ScrollTop lenis={lenis} {...props}>
         <Fab size="small" aria-label="scroll back to top">
           <KeyboardArrowUpIcon />

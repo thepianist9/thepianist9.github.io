@@ -15,42 +15,49 @@ import {
 import { useControls, button } from 'leva'
 // import { EffectComposer, HueSaturation, BrightnessContrast } from '@react-three/postprocessing'
 
-export function Intro() {
+export function Intro({ isMobile }) {
   const { autoRotate, text, shadow, ...config } = {
     text: 'David',
-    backside: true,
-    backsideThickness: 0.3,
-    samples: 16,
-    resolution: 512,
+    backside: false, // Disable backside rendering for better performance
+    samples: 4, // Reduce samples for faster rendering
+    resolution: 512, // Lower resolution for better performance
     transmission: 0.8,
-    clearcoat: 0.1,
+    clearcoat: 0.2,
     clearcoatRoughness: 0.1,
     thickness: 0.4,
-    chromaticAberration: 1,
-    anisotropy: 0.3,
-    roughness: 0.2,
-    distortion: 0.3,
-    distortionScale: 0.2,
-    temporalDistortion: 0.1,
-    ior: 1.5,
+    chromaticAberration: 0.5, // Reduced for less computational intensity
+    anisotropy: 0.2, // Slightly reduced
+    roughness: 0.3, // Increased slightly for less complex calculations
+    distortion: 0.2, // Reduced for better performance
+    distortionScale: 0.1, // Reduced scale
+    temporalDistortion: 0, // Disabled for better performance
+    ior: 1.2, // Reduced for simpler calculations
     color: '#4a90e2', // Changed to a medium blue color
     gColor: '#ffa500', // Changed to cyan for a blue glow effect
     autoRotate: true,
   }
+
+  // Adjust camera position based on isMobile
+  const cameraPosition = isMobile ? [0, -0.5, 1.5] : [0, -1, 2.25]
+
   return (
     <><color attach="background" args={['#121212']} />
       {/** The text and the grid */}
-      <Text config={config} rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 2.25]}>
+      <Text config={config} rotation={[-Math.PI / 2, 0, 0]} position={cameraPosition} scale={isMobile ? 0.4 : 1}>
         {text}
       </Text>
       {/** Controls */}
       <OrbitControls autoRotate={autoRotate} enableZoom={false} enablePan={false} enableDamping dampingFactor={0.1} rotateSpeed={0.25} />
 
       {/** The environment is just a bunch of shapes emitting light. This is needed for the clear-coat */}
-      <Environment resolution={16}>
-        <group rotation={[-Math.PI / 4, -0.3, 0]}>
-          <Lightformer type="ring" intensity={10} rotation-y={Math.PI / 2} position={[-0.1, -1, -5]} scale={20} />
-        </group>
+      <Environment resolution={32}>
+        <Lightformer 
+          type="ring" 
+          intensity={15} 
+          rotation-y={Math.PI / 2} 
+          position={[-0.1, -1, -5]} 
+          scale={isMobile ? 10 : 15} 
+        />
       </Environment>
     </>
   );
@@ -85,8 +92,8 @@ function Text({ children, config, font = `${process.env.PUBLIC_URL}/Inter_Medium
             letterSpacing={-0.03}
             height={0.25}
             bevelSize={0.01}
-            bevelSegments={10}
-            curveSegments={128}
+            bevelSegments={6}  // Reduced from 10
+            curveSegments={64} // Reduced from 128
             bevelThickness={0.01}>
             {children}
             <MeshTransmissionMaterial {...config} />

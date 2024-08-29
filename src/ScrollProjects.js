@@ -9,7 +9,7 @@ import './util'
 import { ProjectData } from './store'
 import { useSnapshot } from 'valtio'
 
-export const ScrollProjects = ({ lenis, snap }) => {
+export const ScrollProjects = ({ lenis, snap, isMobile }) => {
   const projectSnap = useSnapshot(ProjectData)
   const scrollRef = useRef(0)
   const lastScrollRef = useRef(0)
@@ -51,6 +51,7 @@ export const ScrollProjects = ({ lenis, snap }) => {
       <Carousel 
         selectedIndex={projectSnap.selectedProjectIndex} 
         expandedCard={expandedCard}
+        isMobile={isMobile}
       />
     </Rig>
     </>
@@ -87,14 +88,13 @@ function Rig({lenis, children, scrollRef, ...props}) {
   </group>
 }
 
-function Carousel({ selectedIndex, expandedCard }) {
+function Carousel({ selectedIndex, expandedCard, isMobile }) {
   const { viewport } = useThree()
   const projectSnap = useSnapshot(ProjectData)
-  const isMobile = viewport.width < 5
 
-  // Adjust radius and image scale based on screen size
-  const radius = isMobile ? 1.5 : 2.5
-  const imageScale = isMobile ? 0.8 : 1
+  // Adjust radius and image scale based on isMobile prop
+  const radius = isMobile ? 0.7 : 1.5
+  const imageScale = isMobile ? 0.4 : 0.5
 
   return (
     <>
@@ -108,7 +108,7 @@ function Carousel({ selectedIndex, expandedCard }) {
             url={`${process.env.PUBLIC_URL}/Projects/img${Math.floor(index % 10) + 1}_.jpg`}
             position={[
               Math.sin(angle) * radius,
-              0,
+              0.1,
               Math.cos(angle) * radius
             ]}
             rotation={[0, angle, 0]}

@@ -24,6 +24,7 @@ export function App() {
   const lenisRef = useRef(null);
   const snapRef = useRef(null);
   const [activeViewIndex, setActiveViewIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Setup Lenis and Snap
   useEffect(() => {
@@ -123,36 +124,46 @@ export function App() {
     setIsLoaded(true);
   }, []);
 
+  // Function to check if the device is mobile
+  const checkMobile = useCallback(() => {
+    setIsMobile(window.innerWidth <= 768); // Adjust this threshold as needed
+  }, []);
+
+  // Check for mobile on mount and window resize
+  useEffect(() => {
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, [checkMobile]);
+
   return (
     <>
       <div className="container" ref={container} id='container'>
         {/* Views */}
         <View index={0} className='View' id="Home" >
-          {/* <color attach="background" args={["#fff"]} /> */}
-          <OrthographicCamera makeDefault fov={90} position = {[11, 100, 100]} zoom= {50} gl={{ preserveDrawingBuffer: true }}/>
-          <Intro />
+          <OrthographicCamera makeDefault fov={90} position={[11, 100, 100]} zoom={50} gl={{ preserveDrawingBuffer: true }}/>
+          <Intro isMobile={isMobile} />
         </View>
-        <View index={1}  className='View' id="Skills">
+        <View index={1} className='View' id="Skills">
           <PerspectiveCamera makeDefault fov={90} position={[0,0, 30]}/>
           <color attach="background" args={['#121212']} />
-          <Skills isActive={activeViewIndex === 1} />
+          <Skills isActive={activeViewIndex === 1} isMobile={isMobile} />
           <OrbitControls autoRotate={"off"} enableZoom={false} enablePan={false} enableDamping dampingFactor={0.1} rotateSpeed={0.25} />
         </View>
         <View index={2} className='View' id="Experiences" >
           <color attach="background" args={['#121212']} />
-          <Experiences />
+          <Experiences isMobile={isMobile} />
         </View> 
 
-         <View index={3} className='View' id="Projects">
-         <PerspectiveCamera makeDefault fov={10} position={[0,0, 10]}/>
-         <color attach="background" args={['#121212']} />
-         {/* <OrbitControls autoRotate={"off"} enableZoom={false} enablePan={false} enableDamping dampingFactor={0.1} rotateSpeed={0.25} /> */}
-          {lenisRef.current && <ScrollProjects lenis={lenisRef.current} />}
-         </View>
+        <View index={3} className='View' id="Projects">
+          <PerspectiveCamera makeDefault fov={10} position={[0,0, 10]}/>
+          <color attach="background" args={['#121212']} />
+          {lenisRef.current && <ScrollProjects lenis={lenisRef.current} isMobile={isMobile} />}
+        </View>
      
         <View index={4} className='View' id="Contact">
         <color attach="background" args={['#121212']} />
-          <Contact />
+          <Contact isMobile={isMobile} />
        </View>
       </div>
       
@@ -161,6 +172,7 @@ export function App() {
           style={{ position: 'fixed', top: 0, bottom: 0, left: 0, right: 0 }}
           gl={{ antialias: false }}
           dpr={dpr}
+          frameloop='demand'
           shadows
           eventSource={document.getElementById('root')}
           eventPrefix="client"
@@ -168,6 +180,7 @@ export function App() {
           onCreated={handleLoaded}
         >
           <PerformanceMonitor onIncline={() => setDpr(2)} onDecline={() => setDpr(1)}>
+          <color attach="background" args={['#121212']} />
             <View.Port />
             <Preload all />
           </PerformanceMonitor>
@@ -175,7 +188,7 @@ export function App() {
       </Suspense>
       {isLoaded && <ResponsiveAppBar lenis={lenisRef.current}/>}
       <LoadingScreen onLoaded={handleLoaded} />
-      {isLoaded && <Overlay />}
+      {isLoaded && <Overlay isMobile={isMobile} />}
     </>
   );
 }
