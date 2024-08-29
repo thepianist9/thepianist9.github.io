@@ -82,8 +82,8 @@ export function ResponsiveAppBar(props) {
     <React.Fragment>
       <CssBaseline />
       <AppBar sx={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', boxShadow: 'none' }}>
-        <Container maxWidth={false} disableGutters>
-          <Toolbar sx={{ width: '100%', maxWidth: 'lg', margin: '0 auto', justifyContent: 'space-between' }}>
+        <Container maxWidth="lg">
+          <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <IconButton
                 size="large"
@@ -121,7 +121,13 @@ export function ResponsiveAppBar(props) {
                 <Button
                   key={page}
                   onClick={(event) => handleNavClick(event, page.replace(/\s+/g, ''))}
-                  sx={{ color: 'white', display: 'block', my: 1 }}
+                  sx={{ 
+                    color: 'white', 
+                    display: 'block', 
+                    my: 1,
+                    width: '100%', 
+                    textAlign: 'center' 
+                  }}
                 >
                   {page}
                 </Button>

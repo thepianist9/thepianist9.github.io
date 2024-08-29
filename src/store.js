@@ -2,33 +2,33 @@ import { proxy } from "valtio"
 
 const experiencesData = proxy({
     activeExperience: "",
-    '/Experiences/tud.jpeg': {
+    'TUD': {
         company: 'Technische Universität Dresden',
         position: 'Research Assistant',
         duration: 'Oct 2021 - April 2022',
         tasks: [
-            'Developed the ”Geheim!” app, leveraging Unity’s AR Foundation to bring historical buildings to life in virtual tours, providing users with an immersive experience of the campus’s past.',
-            'Successfully deployed the app on the Android and iOS App stores'
+            "Developed the Geheim! app, leveraging Unity's AR Foundation to bring historical buildings to life in virtual tours, providing users with an immersive experience of the campus's past.",
+            "Successfully deployed the app on the Android and iOS App stores"
         ],
         technologies: ['Unity Game Engine', 'Mapbox', 'AR Foundation'],
         languages: ['C#'],
         link: 'https://hccms.inf.tu-dresden.de/'
     },
-'/Experiences/MercedesBenzLogo.jpeg': {
-    company: 'Mercedes-Benz AG',
-    position: 'Intern',
-    duration: 'June, 2022 - Oct 2022',
-    tasks: [
-        'Implemented an approach for procedural generation of landscapes and placement of content relative to the road in a VR research project.',
-        'Placed a virtual vehicle in the scene using Mercedes-Benz Virtual Reality SDK (MB VR-SDK) and Mapbox SDK compatible with any road network.',
-        'Automated placement of detailed content like trees and grass along virtual roads, compatible with any road network.',
-        'Optimized the scene for real-time performance using Level-of-Detail (LOD) techniques.',
-    ],
-    technologies: ['Unity 3D Engine', 'Maps SDK for Unity', 'Mercedes-Benz Virtual Reality SDK', 'Mapbox', 'Level-of-Detail (LOD)'],
-    languages: ['C#'],
-    link: 'https://www.mercedes-benz.com'
-},
-    '/Experiences/infosys.jpeg': {
+    'MercedesBenz': {
+        company: 'Mercedes-Benz AG',
+        position: 'Intern',
+        duration: 'June, 2022 - Oct 2022',
+        tasks: [
+            'Implemented an approach for procedural generation of landscapes and placement of content relative to the road in a VR research project.',
+            'Placed a virtual vehicle in the scene using Mercedes-Benz Virtual Reality SDK (MB VR-SDK) and Mapbox SDK compatible with any road network.',
+            'Automated placement of detailed content like trees and grass along virtual roads, compatible with any road network.',
+            'Optimized the scene for real-time performance using Level-of-Detail (LOD) techniques.',
+        ],
+        technologies: ['Unity 3D Engine', 'Maps SDK for Unity', 'Mercedes-Benz Virtual Reality SDK', 'Mapbox', 'Level-of-Detail (LOD)'],
+        languages: ['C#'],
+        link: 'https://www.mercedes-benz.com'
+    },
+    'Infosys': {
         company: 'Infosys',
         position: 'Intern',
         duration: 'Oct 2022 - Present',
@@ -40,21 +40,21 @@ const experiencesData = proxy({
         technologies: ['Spring Framework', 'SQL', 'Web Development'],
         languages: ['Java', 'Python', 'SQL'],
     },
-  '/Experiences/hhi.png': {
-    company: 'Fraunhofer Institute',
-    position: 'Research Assistant',
-    duration: 'April 2023 - Present',
-    tasks: [
-        'Developed a cross-platform architectural template for immersive extended reality experiences, encompassing AR, VR, desktop, and tablet platforms.',
-        'Contributed to the testing and deployment of the Compair application for Android and iOS app stores.',
-        'Implemented new system design patterns for the Smartsite and Econom projects, including the development of a new UI system for both.',
-        "Participated in demonstrating projects at various conferences and expos, showcasing the institute's technological advancements."
-    ],
-    technologies: ['AR', 'VR', 'Cross-platform development', 'UI/UX design', "Mongo DB", "Networking", "Unity 3D"],
-    languages: [],
-    link: 'https://www.fraunhofer.de/en.html'
-},
-    '/Experiences/Entransys.jpeg': {
+    'HHI': {
+        company: 'Fraunhofer Institute',
+        position: 'Research Assistant',
+        duration: 'April 2023 - Present',
+        tasks: [
+            'Developed a cross-platform architectural template for immersive extended reality experiences, encompassing AR, VR, desktop, and tablet platforms.',
+            'Contributed to the testing and deployment of the Compair application for Android and iOS app stores.',
+            'Implemented new system design patterns for the Smartsite and Econom projects, including the development of a new UI system for both.',
+            "Participated in demonstrating projects at various conferences and expos, showcasing the institute's technological advancements."
+        ],
+        technologies: ['AR', 'VR', 'Cross-platform development', 'UI/UX design', "Mongo DB", "Networking", "Unity 3D"],
+        languages: [],
+        link: 'https://www.fraunhofer.de/en.html'
+    },
+    'Entransys': {
         company: 'Entransys Private Limited',
         position: 'Intern',
         duration: '',

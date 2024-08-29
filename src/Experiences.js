@@ -9,11 +9,11 @@ import { experiencesData } from './store'
 const GOLDENRATIO = 1.61803398875
 
 const imagePaths = [
-  `${process.env.PUBLIC_URL}/Experiences/tud.jpeg`,
+  `${process.env.PUBLIC_URL}/Experiences/TUD.jpeg`,
   `${process.env.PUBLIC_URL}/Experiences/Entransys.jpeg`,
-  `${process.env.PUBLIC_URL}/Experiences/infosys.jpeg`,
-  `${process.env.PUBLIC_URL}/Experiences/MercedesBenzLogo.jpeg`,
-  `${process.env.PUBLIC_URL}/Experiences/hhi.png`,
+  `${process.env.PUBLIC_URL}/Experiences/Infosys.jpeg`,
+  `${process.env.PUBLIC_URL}/Experiences/MercedesBenz.jpeg`,
+  `${process.env.PUBLIC_URL}/Experiences/HHI.png`,
 
 
 
@@ -88,14 +88,20 @@ const Floor = () => (
 function Frames({ images, isMobile, q = new THREE.Quaternion(), p = new THREE.Vector3() }) {
   const ref = useRef()
   const clicked = useRef()
-  const [, params] = useRoute('/item/:id')
-  const [, setLocation] = useLocation()
   const [activeFrame, setActiveFrame] = useState(null)
   const [targetPosition, setTargetPosition] = useState(new THREE.Vector3(0, 0, 5.5))
   const [targetQuaternion, setTargetQuaternion] = useState(new THREE.Quaternion())
 
   useEffect(() => {
-    clicked.current = ref.current.getObjectByName(params?.id)
+    updateFrameState()
+  }, [clicked.current, images, isMobile])
+
+  useFrame((state, dt) => {
+    easing.damp3(state.camera.position, targetPosition, 0.4, dt)
+    easing.dampQ(state.camera.quaternion, targetQuaternion, 0.4, dt)
+  })
+
+  function updateFrameState() {
     if (clicked.current) {
       clicked.current.parent.updateWorldMatrix(true, true)
       const newPosition = new THREE.Vector3(0, isMobile ? GOLDENRATIO/4 : GOLDENRATIO / 2, isMobile ? 2.2 : 1.6)
@@ -106,37 +112,35 @@ function Frames({ images, isMobile, q = new THREE.Quaternion(), p = new THREE.Ve
       setTargetQuaternion(newQuaternion)
       setActiveFrame(clicked.current.name)
       
-      // Update experiencesData with the selected frame's URL
+      // Update experiencesData with the selected frame's filename without extension
       const selectedImage = images.find(img => getUuid(img.url) === clicked.current.name)
       if (selectedImage) {
-        experiencesData.activeExperience = selectedImage.url
+        experiencesData.activeExperience = getFilenameWithoutExtension(selectedImage.url)
       }
     } else {
-      setTargetPosition(new THREE.Vector3(0, isMobile ? 0 :0, isMobile ? 6 : 5.5)) 
+      setTargetPosition(new THREE.Vector3(0, isMobile ? 0.1 : 0, isMobile ? 6 : 5.5)) 
       setTargetQuaternion(new THREE.Quaternion())
       setActiveFrame(null)
       
       // Clear the selectedFrameUrl when no frame is selected
       experiencesData.activeExperience = null
     }
-  }, [params, images, isMobile])
-
-  useFrame((state, dt) => {
-    easing.damp3(state.camera.position, targetPosition, 0.4, dt)
-    easing.dampQ(state.camera.quaternion, targetQuaternion, 0.4, dt)
-  })
+  }
 
   function onClickFrame(e) {
     e.stopPropagation()
-    const newLocation = clicked.current === e.object ? '/' : '/item/' + e.object.name
-    setLocation(newLocation)
+    clicked.current = clicked.current === e.object ? null : e.object
+    updateFrameState()
   }
 
   return (
     <group
       ref={ref}
       onClick={onClickFrame}
-      onPointerMissed={() => setLocation('/')}>
+      onPointerMissed={() => { 
+        clicked.current = null
+        updateFrameState()
+      }}>
       {images.map((props) => (
         <Frame 
           key={props.url} 
@@ -198,4 +202,8 @@ function Lights({ preset }) {
       <Environment preset={preset} />
     </>
   )
+}
+
+const getFilenameWithoutExtension = (url) => {
+  return url.split('/').pop().split('.')[0];
 }

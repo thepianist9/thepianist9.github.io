@@ -280,12 +280,12 @@ export function Overlay({ isMobile }) {
     style={{ color: 'white' }}>
     <div style={{ height: "100vh", width: "100vw" }}>
       <div className="dot" style={{ width: "100%" }}>
-        <h1 style={{color: "white", width: "100%", textAlign: "center", fontSize: isMobile ? "1.5rem" : "5vw"}}>Welcome to my side of the Metaverse</h1>
+        <h1 style={{color: "white", width: "100%", textAlign: "left", fontSize: isMobile ? "1.5rem" : "5vw"}}>Welcome to my side of the Metaverse</h1>
       </div>
     </div>
     <div style={{ height: "100vh" }}>
       <div className="dot" style={{ width: "100%" }}>
-        <h1 style={{color: "white", width: "100%", textAlign: "center", fontSize: isMobile ? "1.5rem" : "5vw"}}>My Toolset</h1>
+        <h1 style={{color: "white", width: "100%", textAlign: "left", fontSize: isMobile ? "1.5rem" : "5vw"}}>My Toolset</h1>
       </div>
     </div>
     <Experience isMobile={isMobile} />
